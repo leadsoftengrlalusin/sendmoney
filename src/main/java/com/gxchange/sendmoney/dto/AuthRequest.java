@@ -1,4 +1,3 @@
-// AuthRequest.java
 package com.gxchange.sendmoney.dto;
 
 public class AuthRequest {
