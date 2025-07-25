@@ -6,6 +6,7 @@ import com.gxchange.sendmoney.model.Role;
 import com.gxchange.sendmoney.repository.UserRepository;
 import com.gxchange.sendmoney.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,21 +26,25 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping
-    public String register(@RequestBody UserDto userDto) {
-        Role unverified = roleRepo.findByName("ROLE_UNVERIFIED");
+    public ResponseEntity<?> register(@RequestBody UserDto userDto) {
+        if (userRepo.existsByEmail(userDto.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+        if (userRepo.existsByPhoneNumber(userDto.getPhoneNumber())) {
+            return ResponseEntity.badRequest().body("Phone number already exists");
+        }
 
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setPhoneNumber(userDto.getPhoneNumber());
-
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
         user.setStatus(User.Status.ACTIVE);
-        user.setRoles(Collections.singleton(unverified));
+        user.setRoles(Collections.singleton(roleRepo.findByName("ROLE_UNVERIFIED")));
 
         userRepo.save(user);
-        return "User registered with UNVERIFIED role";
+        return ResponseEntity.ok("User registered successfully");
     }
+
 }
 
