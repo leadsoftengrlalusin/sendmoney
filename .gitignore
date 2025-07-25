@@ -34,3 +34,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignore all DB files under data folder
+/data/*.lck
+/data/*.log
+/data/*.properties
+/data/*.script
