@@ -1,8 +1,10 @@
 package com.gxchange.sendmoney.controller;
 
 import com.gxchange.sendmoney.dto.UserDto;
+import com.gxchange.sendmoney.model.Balance;
 import com.gxchange.sendmoney.model.User;
 import com.gxchange.sendmoney.model.Role;
+import com.gxchange.sendmoney.repository.BalanceRepository;
 import com.gxchange.sendmoney.repository.UserRepository;
 import com.gxchange.sendmoney.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private BalanceRepository balanceRepo;
+
     @PostMapping
     public ResponseEntity<?> register(@RequestBody UserDto userDto) {
         if (userRepo.existsByEmail(userDto.getEmail())) {
@@ -42,7 +47,12 @@ public class UserController {
         user.setStatus(User.Status.ACTIVE);
         user.setRoles(Collections.singleton(roleRepo.findByName("ROLE_UNVERIFIED")));
 
-        userRepo.save(user);
+        User savedUser = userRepo.save(user);
+
+        // Initialize balance
+        Balance balance = new Balance(savedUser);
+        balanceRepo.save(balance);
+
         return ResponseEntity.ok("User registered successfully");
     }
 
