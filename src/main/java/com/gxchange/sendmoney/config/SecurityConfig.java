@@ -20,14 +20,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/api/**")
+                        .ignoringRequestMatchers("/h2-console/**", "/api/**", "/terms")
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/css/**",
+                                "/WEB-INF/jsp/**",
                                 "/h2-console/**",
                                 "/api/register",
                                 "/api/auth/login",
                                 "/error",
+                                "/terms",
                                 "/"
                         ).permitAll()
                         .anyRequest().authenticated()
