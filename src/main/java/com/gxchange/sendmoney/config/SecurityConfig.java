@@ -24,13 +24,14 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/css/**",
+                                "/WEB-INF/jsp/**",
                                 "/h2-console/**",
                                 "/api/register",
                                 "/api/auth/login",
                                 "/error",
-                                "/",
                                 "/terms",
-                                "/WEB-INF/jsp/**"
+                                "/"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
