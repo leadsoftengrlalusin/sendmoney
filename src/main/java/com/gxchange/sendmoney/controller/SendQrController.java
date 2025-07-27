@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
 
 @Controller
 public class SendQrController {
@@ -26,11 +30,27 @@ public class SendQrController {
         String payload = String.format("{\"phoneNumber\":\"%s\", \"amount\":%d}", phoneNumber, amount);
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(payload, BarcodeFormat.QR_CODE, 200, 200);
+        BitMatrix bitMatrix = qrCodeWriter.encode(payload, BarcodeFormat.QR_CODE, 300, 300);
 
-        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-        String base64Qr = Base64.getEncoder().encodeToString(pngOutputStream.toByteArray());
+        BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+        BufferedImage logo = ImageIO.read(new File("src/main/resources/static/logo.png"));
+
+        int qrWidth = qrImage.getWidth();
+        int qrHeight = qrImage.getHeight();
+
+        int overlaySize = qrWidth / 5;
+        int overlayX = (qrWidth - overlaySize) / 2;
+        int overlayY = (qrHeight - overlaySize) / 2;
+
+        Graphics2D g = qrImage.createGraphics();
+        g.drawImage(logo.getScaledInstance(overlaySize, overlaySize, Image.SCALE_SMOOTH),
+                overlayX, overlayY, null);
+        g.dispose();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(qrImage, "PNG", baos);
+        String base64Qr = Base64.getEncoder().encodeToString(baos.toByteArray());
 
         model.addAttribute("qrImage", base64Qr);
         model.addAttribute("phoneNumber", phoneNumber);
