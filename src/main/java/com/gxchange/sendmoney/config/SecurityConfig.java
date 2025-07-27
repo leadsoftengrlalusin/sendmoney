@@ -27,6 +27,7 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/WEB-INF/jsp/**",
                                 "/verify/**",
+                                "/send-qr",
                                 "/h2-console/**",
                                 "/api/register",
                                 "/api/auth/login",
