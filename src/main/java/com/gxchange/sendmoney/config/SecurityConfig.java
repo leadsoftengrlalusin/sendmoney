@@ -31,6 +31,7 @@ public class SecurityConfig {
                                 "/h2-console/**",
                                 "/api/register",
                                 "/api/auth/login",
+                                "/actuator/**",
                                 "/error",
                                 "/terms",
                                 "/"
